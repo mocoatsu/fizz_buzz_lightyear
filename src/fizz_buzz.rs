@@ -1,3 +1,8 @@
+use std::io::{self};
+use std::{thread, time};
+
+use crate::write_and_flush;
+
 pub fn calculate_fizz_buzz(n: u8) -> String {
     match n {
         n if n % 15 == 0 => "FizzBuzz".to_string(),
@@ -7,11 +12,19 @@ pub fn calculate_fizz_buzz(n: u8) -> String {
     }
 }
 
-pub fn run_fizz_buzz() {
+pub fn run_fizz_buzz() -> io::Result<()> {
+    let mut stdout = io::stdout();
+
     for i in 1..=100 {
         let result = calculate_fizz_buzz(i);
-        println!("{}", result)
+
+        write_and_flush(&mut stdout, format!("\r{}", result))?;
+        thread::sleep(time::Duration::from_millis(10));
+
+        write_and_flush(&mut stdout, "\r                       ".to_string())?;
     }
+
+    Ok(())
 }
 
 #[cfg(test)]
